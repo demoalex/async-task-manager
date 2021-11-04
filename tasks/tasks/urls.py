@@ -19,7 +19,7 @@ from django.urls import path, include
 from . import views
 
 tasks_urlpatterns = [
-    path('', views.index, name='index'),
+    path('', views.index, name='tasks_index'),
 ]
 
 urlpatterns = [
