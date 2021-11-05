@@ -6,6 +6,9 @@ name = "pypi"
 [packages]
 django = "==3.2.9"
 django-cors-headers = "*"
+authlib = "*"
+requests = "*"
+rele = {extras = ["django"], version = "*"}
 
 [dev-packages]
 
