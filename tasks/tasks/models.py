@@ -19,7 +19,7 @@ class Task(models.Model):
     assignee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks_assigned')
     description = models.TextField(default='', blank=True)
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=STATUS_NEW)
-    created_at = models.DateTimeField(default=timezone.now, editable=False, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, db_index=True, editable=False)
 
     def __str__(self):
