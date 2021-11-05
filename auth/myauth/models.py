@@ -36,6 +36,7 @@ class MyUser(AbstractUser):
                 'event_type': 'CUD',
                 'data': {
                     'public_id': str(self.public_id),
+                    'username': str(self.username),
                     'email': self.email,
                     'full_name': self.get_full_name(),
                     'role': self.role
@@ -51,6 +52,7 @@ class MyUser(AbstractUser):
                 'event_type': 'CUD',
                 'data': {
                     'public_id': str(self.public_id),
+                    'username': str(self.username),
                     'email': self.email,
                     'full_name': self.get_full_name(),
                     'role': self.role
@@ -86,5 +88,6 @@ class MyUser(AbstractUser):
             }
         }
         topic = 'accounts-stream'
+        print(event)
         rele.publish(topic, event)
         # produce CUD event END
