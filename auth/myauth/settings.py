@@ -144,3 +144,5 @@ OAUTH2_PROVIDER = {
     },
     "OAUTH2_VALIDATOR_CLASS": "myauth.oauth_validators.CustomOAuth2Validator",
 }
+
+GCP_PROJECT_ID = 'test'
