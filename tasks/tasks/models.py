@@ -1,10 +1,10 @@
 import uuid
 import json
+import rele
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.template.defaultfilters import truncatechars
-from .pubsub import publish
 
 
 class Task(models.Model):
@@ -46,7 +46,7 @@ class Task(models.Model):
                 }
             }
             topic = 'tasks-stream'
-            publish(topic, json.dumps(event))
+            rele.publish(topic, event)
             # produce CUD event END
         else:
             # produce CUD event
@@ -62,7 +62,7 @@ class Task(models.Model):
                 }
             }
             topic = 'tasks-stream'
-            publish(topic, json.dumps(event))
+            rele.publish(topic, event)
             # produce CUD event END
         super(Task, self).save(*args, **kwargs)
         if self.status != self.__original_status:
@@ -77,7 +77,7 @@ class Task(models.Model):
                 }
             }
             topic = 'tasks'
-            publish(topic, json.dumps(event))
+            rele.publish(topic, event)
             # produce Business event END
 
     def delete(self, *args, **kwargs):

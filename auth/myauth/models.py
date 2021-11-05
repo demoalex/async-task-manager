@@ -1,4 +1,5 @@
 import uuid
+import rele
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -41,6 +42,7 @@ class MyUser(AbstractUser):
                 }
             }
             topic = 'accounts-stream'
+            rele.publish(topic, event)
             # produce CUD event END
         else:
             # produce CUD event
@@ -55,6 +57,7 @@ class MyUser(AbstractUser):
                 }
             }
             topic = 'accounts-stream'
+            rele.publish(topic, event)
             # produce CUD event END
         super(MyUser, self).save(*args, **kwargs)
         if self.role != self.__original_role:
@@ -69,6 +72,7 @@ class MyUser(AbstractUser):
                 }
             }
             topic = 'accounts'
+            rele.publish(topic, event)
             # produce Business event END
 
     def delete(self, *args, **kwargs):
@@ -82,4 +86,5 @@ class MyUser(AbstractUser):
             }
         }
         topic = 'accounts-stream'
+        rele.publish(topic, event)
         # produce CUD event END

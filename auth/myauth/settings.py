@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'oauth2_provider',
     'corsheaders',
+    'rele',
     'myauth',
 ]
 
@@ -145,4 +146,13 @@ OAUTH2_PROVIDER = {
     "OAUTH2_VALIDATOR_CLASS": "myauth.oauth_validators.CustomOAuth2Validator",
 }
 
-GCP_PROJECT_ID = 'test'
+CONN_MAX_AGE = 0
+RELE = {
+    'APP_NAME': 'djauth',
+    'SUB_PREFIX': 'djauth',
+    'GC_CREDENTIALS_PATH': 'goglia-dev-9a931575a10e.json',
+    'MIDDLEWARE': [
+        'rele.contrib.LoggingMiddleware',
+        'rele.contrib.DjangoDBMiddleware',
+    ],
+}

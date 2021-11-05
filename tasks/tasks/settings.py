@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'tasks'
+    'rele',
+    'tasks',
 ]
 
 MIDDLEWARE = [
@@ -129,9 +130,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-
-GCP_PROJECT_ID = 'test'
-
 # OAuth Settings
 OAUTH_URL_WHITELISTS = []
 
@@ -149,4 +147,15 @@ OAUTH_CLIENT = {
         'token_placement': 'header'
     },
     'userinfo_endpoint': 'http://127.0.0.1:8080/o/userinfo/',
+}
+
+CONN_MAX_AGE = 0
+RELE = {
+    'APP_NAME': 'djtasks',
+    'SUB_PREFIX': 'djtasks',
+    'GC_CREDENTIALS_PATH': 'goglia-dev-9a931575a10e.json',
+    'MIDDLEWARE': [
+        'rele.contrib.LoggingMiddleware',
+        'rele.contrib.DjangoDBMiddleware',
+    ],
 }
