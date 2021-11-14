@@ -21,6 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-g8c_k3fq7e@(t4s&lvt6v3np^%&$3fq3a)8n^5^omdph8roo_7'
+SESSION_COOKIE_NAME = 'auth_sessionid'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'oauth2_provider',
     'corsheaders',
+    'rele',
     'myauth',
 ]
 
@@ -131,3 +133,26 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+AUTH_USER_MODEL = 'myauth.MyUser'
+
+OAUTH2_PROVIDER = {
+    "OIDC_ENABLED": True,
+    'SCOPES': {
+        'read': 'Read scope',
+        'write': 'Write scope',
+        "openid": "OpenID Connect scope",
+    },
+    "OAUTH2_VALIDATOR_CLASS": "myauth.oauth_validators.CustomOAuth2Validator",
+}
+
+CONN_MAX_AGE = 0
+RELE = {
+    'APP_NAME': 'djauth',
+    'SUB_PREFIX': 'djauth',
+    'GC_CREDENTIALS_PATH': 'goglia-dev-9a931575a10e.json',
+    'MIDDLEWARE': [
+        'rele.contrib.LoggingMiddleware',
+        'rele.contrib.DjangoDBMiddleware',
+    ],
+}

@@ -21,6 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-10+ei9f@d3wcrof!7!48k6!4g09qgh0i^y4ca5xy3f2mj9icpp'
+SESSION_COOKIE_NAME = 'tasks_sessionid'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rele',
+    'tasks',
 ]
 
 MIDDLEWARE = [
@@ -47,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'tasks.middleware.OAuthMiddleware',
 ]
 
 ROOT_URLCONF = 'tasks.urls'
@@ -125,3 +129,33 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+# OAuth Settings
+OAUTH_URL_WHITELISTS = []
+
+OAUTH_CLIENT_NAME = 'myauth'
+
+OAUTH_CLIENT = {
+    'client_id': 'DK7JStbAwj3dxT9rwwfNg1ciUkfZQZDOQcCw4p5T',
+    'client_secret': 'XqAE7lZf1nE7cRCc5llJ6xq5JHZO4d40WCqH9QRyG2NXY21eC4FyHiNB9FP0zA3Uq1aJBYvnSQBLJphRTeZBX80olfqMaCn6HNFwetZiYWxAW0HmrazlcproPhlaY2Rh',
+    'access_token_url': 'http://127.0.0.1:8080/o/token/',
+    'authorize_url': 'http://127.0.0.1:8080/o/authorize/',
+    # 'api_base_url': 'https://api.github.com/',
+    'redirect_uri': 'http://127.0.0.1:8090/oauth/callback',
+    'client_kwargs': {
+        'scope': 'openid',
+        'token_placement': 'header'
+    },
+    'userinfo_endpoint': 'http://127.0.0.1:8080/o/userinfo/',
+}
+
+CONN_MAX_AGE = 0
+RELE = {
+    'APP_NAME': 'djtasks',
+    'SUB_PREFIX': 'djtasks',
+    'GC_CREDENTIALS_PATH': 'goglia-dev-9a931575a10e.json',
+    'MIDDLEWARE': [
+        'rele.contrib.LoggingMiddleware',
+        'rele.contrib.DjangoDBMiddleware',
+    ],
+}
