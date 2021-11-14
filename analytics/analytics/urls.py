@@ -1,4 +1,4 @@
-"""billing URL Configuration
+"""analytics URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.2/topics/http/urls/
@@ -18,13 +18,11 @@ from django.urls import path, include
 
 from . import views
 
-billing_urlpatterns = [
-    path('', views.index, name='billing_index'),
+analytics_urlpatterns = [
+    path('', views.index, name='analytics_index'),
 ]
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('billing/', include(billing_urlpatterns)),
+    path('analytics/', include(analytics_urlpatterns)),
 ]
-
-
