@@ -31,8 +31,9 @@ class Task(models.Model):
     )
     public_id = models.UUIDField(default=uuid.uuid4, editable=False)
     reporter = models.ForeignKey(ExternalUser, on_delete=models.CASCADE, related_name='tasks_reported')
-    assignee = models.ForeignKey(ExternalUser, on_delete=models.CASCADE, related_name='tasks_assigned')
-    description = models.TextField(default='', blank=True)
+    assignee = models.ForeignKey(ExternalUser, on_delete=models.CASCADE, related_name='tasks_assigned', null=True)
+    title = models.CharField(max_length=255, default='', blank=True, )
+    description = models.TextField(default='', blank=True, )
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=STATUS_NEW)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, db_index=True, editable=False)
@@ -52,8 +53,8 @@ class Task(models.Model):
                 'event_type': 'CUD',
                 'data': {
                     'public_id': str(self.public_id),
-                    'reporter': str(self.reporter.id),
-                    'assignee': str(self.assignee.id),
+                    'reporter': str(self.reporter.public_id),
+                    'assignee': str(self.assignee.public_id) if self.assignee else None,
                     'description': self.description,
                     'status': self.status
                 }
@@ -61,6 +62,7 @@ class Task(models.Model):
             topic = 'tasks-stream'
             rele.publish(topic, event)
             # produce CUD event END
+            self.assign_task()
         else:
             # produce CUD event
             event = {
@@ -68,8 +70,8 @@ class Task(models.Model):
                 'event_type': 'CUD',
                 'data': {
                     'public_id': str(self.public_id),
-                    'reporter': str(self.reporter.id),
-                    'assignee': str(self.assignee.id),
+                    'reporter': str(self.reporter.public_id),
+                    'assignee': str(self.assignee.public_id) if self.assignee else None,
                     'description': self.description,
                     'status': self.status
                 }
@@ -104,8 +106,19 @@ class Task(models.Model):
             }
         }
         topic = 'tasks-stream'
+        rele.publish(topic, event)
         # produce CUD event END
 
+    def assign_task(self,):
+        # kill! prod server with .order_by('?')
+        self.assignee = ExternalUser.objects.filter(role='developer').order_by('?').first()
+        self.status = Task.STATUS_ASSIGNED
+        # self.save()
+
+    @property
+    def short_description(self):
+        return truncatechars(self.description, 30)
+
     def __str__(self):
-        return f'#{self.id}: {self.status}: {truncatechars(self.description, 30)}'
+        return f'#{self.id}: {self.status}: {self.short_description}'
 

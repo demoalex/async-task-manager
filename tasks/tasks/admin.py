@@ -4,8 +4,9 @@ from .models import Task, ExternalUser
 
 
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('public_id', '__str__', )
+    list_display = ('public_id', 'title', 'short_description', 'status', )
     readonly_fields = ('public_id', )
+    list_filter = ('status', )
 
 
 class ExternalUserAdmin(admin.ModelAdmin):
