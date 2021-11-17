@@ -3,7 +3,10 @@
 {% block content %}
 <div class="">
     <h1>Tasks</h1>
-    <a type="button" class="btn btn-primary" href="{% url 'tasks:add_task' %}">Add Task</a>
+    <menu>
+        <a type="button" class="btn btn-primary" href="{% url 'tasks:add_task' %}">Add Task</a> <br/>
+        <a type="button" class="btn btn-primary" href="{% url 'tasks:reassign_tasks' %}">(Re)Assign Tasks!</a>
+    </menu>
     <ul>
         {% for task in tasks %}
             <li>

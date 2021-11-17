@@ -62,7 +62,7 @@ class Task(models.Model):
             topic = 'tasks-stream'
             rele.publish(topic, event)
             # produce CUD event END
-            self.assign_task()
+            self.assign_task_no_save()
         else:
             # produce CUD event
             event = {
@@ -109,11 +109,18 @@ class Task(models.Model):
         rele.publish(topic, event)
         # produce CUD event END
 
-    def assign_task(self,):
+    def assign_task_no_save(self,):
         # kill! prod server with .order_by('?')
         self.assignee = ExternalUser.objects.filter(role='developer').order_by('?').first()
         self.status = Task.STATUS_ASSIGNED
         # self.save()
+
+    @classmethod
+    def reassign_tasks(cls):
+        queryset = cls.objects.filter(status__in=[cls.STATUS_ASSIGNED, cls.STATUS_NEW])
+        for task in queryset:
+            task.assign_task_no_save()
+            task.save()
 
     @property
     def short_description(self):

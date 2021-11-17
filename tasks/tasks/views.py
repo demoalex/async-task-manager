@@ -1,4 +1,4 @@
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, render
 from django.views.generic.edit import CreateView, FormView
@@ -44,3 +44,7 @@ def detail(request, task_id):
     }
     return render(request, 'tasks/detail.html', context)
 
+
+def reassign_tasks(request):
+    Task.reassign_tasks()
+    return HttpResponseRedirect('/tasks/')

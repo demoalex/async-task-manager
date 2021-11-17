@@ -21,6 +21,7 @@ from . import views
 tasks_urlpatterns = [
     path('', views.index, name='tasks_index'),
     path('add/', views.TaskFormView.as_view(), name='add_task'),
+    path('reassign_tasks/', views.reassign_tasks, name='reassign_tasks'),
     path('<int:task_id>/', views.detail, name='detail'),
 ]
 
