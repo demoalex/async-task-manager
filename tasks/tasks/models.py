@@ -7,6 +7,19 @@ from django.contrib.auth.models import User
 from django.template.defaultfilters import truncatechars
 
 
+class ExternalUser(models.Model):
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False)
+    username = models.CharField(max_length=150, blank=True, editable=False)
+    full_name = models.CharField(max_length=255, blank=True, editable=False)
+    email = models.EmailField(max_length=255, blank=True, editable=False)
+    role = models.CharField(max_length=32, blank=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, db_index=True, editable=False)
+
+    def __str__(self):
+        return f'#{self.public_id}: {self.email}'
+
+
 class Task(models.Model):
     STATUS_NEW = 'new'
     STATUS_ASSIGNED = 'assigned'
@@ -17,8 +30,8 @@ class Task(models.Model):
         (STATUS_COMPLETED, 'Completed'),
     )
     public_id = models.UUIDField(default=uuid.uuid4, editable=False)
-    reporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks_reported')
-    assignee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks_assigned')
+    reporter = models.ForeignKey(ExternalUser, on_delete=models.CASCADE, related_name='tasks_reported')
+    assignee = models.ForeignKey(ExternalUser, on_delete=models.CASCADE, related_name='tasks_assigned')
     description = models.TextField(default='', blank=True)
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=STATUS_NEW)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
@@ -96,15 +109,3 @@ class Task(models.Model):
     def __str__(self):
         return f'#{self.id}: {self.status}: {truncatechars(self.description, 30)}'
 
-
-class ExternalUser(models.Model):
-    public_id = models.UUIDField(default=uuid.uuid4, editable=False)
-    username = models.CharField(max_length=150, blank=True, editable=False)
-    full_name = models.CharField(max_length=255, blank=True, editable=False)
-    email = models.EmailField(max_length=255, blank=True, editable=False)
-    role = models.CharField(max_length=32, blank=True, editable=False)
-    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True, db_index=True, editable=False)
-
-    def __str__(self):
-        return f'#{self.public_id}: {self.email}'
