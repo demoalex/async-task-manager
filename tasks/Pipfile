@@ -9,6 +9,7 @@ django-cors-headers = "*"
 authlib = "*"
 requests = "*"
 rele = {extras = ["django"], version = "*"}
+pydantic = "*"
 
 [dev-packages]
 

@@ -134,11 +134,11 @@ OAUTH_URL_WHITELISTS = []
 OAUTH_CLIENT_NAME = 'myauth'
 
 OAUTH_CLIENT = {
-    'client_id': 'DK7JStbAwj3dxT9rwwfNg1ciUkfZQZDOQcCw4p5T',
-    'client_secret': 'XqAE7lZf1nE7cRCc5llJ6xq5JHZO4d40WCqH9QRyG2NXY21eC4FyHiNB9FP0zA3Uq1aJBYvnSQBLJphRTeZBX80olfqMaCn6HNFwetZiYWxAW0HmrazlcproPhlaY2Rh',
+    'client_id': 'yV0aNR7TINkOxzsmlEOuN5Yli9oRGTudgIb0dmPn',
+    'client_secret': 'rYDdBLnNBddj6QaoxMVVV515KnnTI1A7jxf2wujDsHTZH6qfZbwvXn5KqLjDWbSB5T1rRUniORd0SC6sU5cGmYmBSX8GXbg84GGMuRj8noXLB0zZGUhBURro00umABUY',
     'access_token_url': 'http://127.0.0.1:8080/o/token/',
     'authorize_url': 'http://127.0.0.1:8080/o/authorize/',
-    'redirect_uri': 'http://127.0.0.1:8090/oauth/callback',
+    'redirect_uri': 'http://127.0.0.1:8110/oauth/callback',
     'client_kwargs': {
         'scope': 'openid',
         'token_placement': 'header'
