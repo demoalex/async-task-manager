@@ -6,6 +6,12 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.template.defaultfilters import truncatechars
 
+import sys
+sys.path.append('..')
+from schemas.tasks_events import (TaskCreatedEvent, TaskUpdatedEvent, TaskCreatedUpdatedEventData,
+                                  TaskDeletedEvent, TaskDeletedEventData,
+                                  TaskRoleChangedEvent, TaskRoleChangedEventData, )
+
 
 class ExternalUser(models.Model):
     public_id = models.UUIDField(default=uuid.uuid4, editable=False)
@@ -48,68 +54,56 @@ class Task(models.Model):
         # new task
         if not self.id:
             # produce CUD event
-            event = {
-                'event_name': 'TaskCreated',
-                'event_type': 'CUD',
-                'data': {
-                    'public_id': str(self.public_id),
-                    'reporter': str(self.reporter.public_id),
-                    'assignee': str(self.assignee.public_id) if self.assignee else None,
-                    'description': self.description,
-                    'status': self.status
-                }
+            event_data = {
+                'public_id': str(self.public_id),
+                'reporter': str(self.reporter.public_id),
+                'assignee': str(self.assignee.public_id) if self.assignee else None,
+                'description': self.description,
+                'status': self.status
             }
+            event = TaskCreatedEvent(data=TaskCreatedUpdatedEventData(**event_data))
             topic = 'tasks-stream'
-            rele.publish(topic, event)
+            rele.publish(topic, event.json())
             # produce CUD event END
             self.assign_task_no_save()
         else:
             # produce CUD event
-            event = {
-                'event_name': 'TaskUpdated',
-                'event_type': 'CUD',
-                'data': {
-                    'public_id': str(self.public_id),
-                    'reporter': str(self.reporter.public_id),
-                    'assignee': str(self.assignee.public_id) if self.assignee else None,
-                    'description': self.description,
-                    'status': self.status
-                }
+            event_data = {
+                'public_id': str(self.public_id),
+                'reporter': str(self.reporter.public_id),
+                'assignee': str(self.assignee.public_id) if self.assignee else None,
+                'description': self.description,
+                'status': self.status
             }
+            event = TaskUpdatedEvent(data=TaskCreatedUpdatedEventData(**event_data))
             topic = 'tasks-stream'
-            rele.publish(topic, event)
+            rele.publish(topic, event.json())
             # produce CUD event END
         super(Task, self).save(*args, **kwargs)
         if self.status != self.__original_status:
             # produce Business event
-            event = {
-                'event_name': 'TaskRoleChanged',
-                'event_type': 'business',
-                'data': {
-                    'public_id': str(self.public_id),
-                    'new_status': self.status,
-                    'original_status': self.__original_status
-                }
+            event_data = {
+                'public_id': str(self.public_id),
+                'new_status': self.status,
+                'original_status': self.__original_status
             }
+            event = TaskRoleChangedEvent(data=TaskRoleChangedEventData(**event_data))
             topic = 'tasks'
-            rele.publish(topic, event)
+            rele.publish(topic, event.json())
             # produce Business event END
 
     def delete(self, *args, **kwargs):
         super(Task, self).delete(*args, **kwargs)
         # produce CUD event
-        event = {
-            'event_name': 'TaskDeleted',
-            'event_type': 'CUD',
-            'data': {
-                'public_id': str(self.public_id)
-            }
+        event_data = {
+            'public_id': str(self.public_id)
         }
+        event = TaskDeletedEvent(data=TaskDeletedEventData(**event_data))
         topic = 'tasks-stream'
-        rele.publish(topic, event)
+        rele.publish(topic, event.json())
         # produce CUD event END
 
-    def assign_task_no_save(self,):
+    def assign_task_no_save(self, ):
         # kill! prod server with .order_by('?')
         self.assignee = ExternalUser.objects.filter(role='developer').order_by('?').first()
         self.status = Task.STATUS_ASSIGNED
@@ -128,4 +122,3 @@ class Task(models.Model):
 
     def __str__(self):
         return f'#{self.id}: {self.status}: {self.short_description}'
-
