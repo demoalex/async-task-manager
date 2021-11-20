@@ -1,104 +1,81 @@
-from datetime import datetime
-import abc
-from enum import Enum
-from typing import List, ClassVar, Literal, Union, Optional
-from pydantic import BaseModel, ValidationError, conint
+from .common import BaseEvent, BaseEventData, EventTypeLiteral
 
 
-EventTypeLiteral = Literal["data_stream", "business"]
-
-
-class BaseEventData(BaseModel):
-    """ Should be object with fields """
-
-
-class BaseEvent(BaseModel):
-    event_name: str
-    event_type: EventTypeLiteral
-    data: BaseEventData
-
-
-class TaskRoleChangedEventData(BaseEventData):
-    # todo: strict type statuses to allowed enum
-    # todo: strict type public_id to uuid
+class AccountRoleChangedEventData(BaseEventData):
     public_id: str
-    new_status: str
-    original_status: str
+    new_role: str
+    original_role: str
 
 
-class TaskRoleChangedEvent(BaseEvent):
-    event_name = 'TaskRoleChanged'
+class AccountRoleChangedEvent(BaseEvent):
+    event_name = 'AccountRoleChanged'
     event_type: EventTypeLiteral = 'business'
-    data: TaskRoleChangedEventData
+    data: AccountRoleChangedEventData
 
 
 # test
 event_data = {
-    'public_id': '67984894-e26a-4615-92f7-891ec1b9b69e',
-    'new_status': 'assigned',
-    'original_status': 'new'
+    'public_id': 'ee0404c5-8306-4b6b-a087-2648927fec05',
+    'new_role': 'manager',
+    'original_role': 'accountant'
 }
-e = TaskRoleChangedEvent(data=TaskRoleChangedEventData(**event_data))
+e = AccountRoleChangedEvent(data=AccountRoleChangedEventData(**event_data))
 
 
-class TaskCreatedUpdatedEventData(BaseEventData):
+class AccountCreatedUpdatedEventData(BaseEventData):
     public_id: str
-    reporter: str
-    assignee: str
-    description: str
-    status: str
+    username: str
+    email: str
+    full_name: str
+    role: str
 
 
-class TaskCreatedEvent(BaseEvent):
-    event_name = 'TaskCreated'
+class AccountCreatedEvent(BaseEvent):
+    event_name = 'AccountCreated'
     event_type: EventTypeLiteral = 'data_stream'
-    data: TaskCreatedUpdatedEventData
+    data: AccountCreatedUpdatedEventData
 
 
 # test
 event_data = {
-    'public_id': '67984894-e26a-4615-92f7-891ec1b9b69e',
-    'reporter': 'ee0404c5-8306-4b6b-a087-2648927fec05',
-    'assignee': '8dec1f65-fc53-4484-8bef-2eeb4817be6e',
-    'description': 'Style never met and those among great. '
-                   'At no or september sportsmen he perfectly happiness attending. '
-                   'Depending listening delivered off new she procuring satisfied sex existence. ',
-    'status': 'new'
+    'public_id': 'ee0404c5-8306-4b6b-a087-2648927fec05',
+    'username': 'someuser',
+    'email': 'user@email.com',
+    'full_name': 'Alex Lexi',
+    'role': 'developer'
 }
-e = TaskCreatedEvent(data=TaskCreatedUpdatedEventData(**event_data))
+e = AccountCreatedEvent(data=AccountCreatedUpdatedEventData(**event_data))
 
 
-class TaskUpdatedEvent(BaseEvent):
-    event_name = 'TaskUpdated'
+class AccountUpdatedEvent(BaseEvent):
+    event_name = 'AccountUpdated'
     event_type: EventTypeLiteral = 'data_stream'
-    data: TaskCreatedUpdatedEventData
+    data: AccountCreatedUpdatedEventData
 
 
 # test
 event_data = {
-    'public_id': '67984894-e26a-4615-92f7-891ec1b9b69e',
-    'reporter': 'ee0404c5-8306-4b6b-a087-2648927fec05',
-    'assignee': '8dec1f65-fc53-4484-8bef-2eeb4817be6e',
-    'description': 'Style never met and those among great. '
-                   'At no or september sportsmen he perfectly happiness attending. '
-                   'Depending listening delivered off new she procuring satisfied sex existence. ',
-    'status': 'new'
+    'public_id': 'ee0404c5-8306-4b6b-a087-2648927fec05',
+    'username': 'someuser',
+    'email': 'user@email.com',
+    'full_name': 'Alex Lexi',
+    'role': 'manager'
 }
-e = TaskUpdatedEvent(data=TaskCreatedUpdatedEventData(**event_data))
+e = AccountUpdatedEvent(data=AccountCreatedUpdatedEventData(**event_data))
 
 
-class TaskDeletedEventData(BaseEventData):
+class AccountDeletedEventData(BaseEventData):
     public_id: str
 
 
-class TaskDeletedEvent(BaseEvent):
-    event_name = 'TaskDeleted'
+class AccountDeletedEvent(BaseEvent):
+    event_name = 'AccountDeleted'
     event_type: EventTypeLiteral = 'data_stream'
-    data: TaskDeletedEventData
+    data: AccountDeletedEventData
 
 
 # test
 event_data = {
-    'public_id': '67984894-e26a-4615-92f7-891ec1b9b69e',
+    'public_id': 'ee0404c5-8306-4b6b-a087-2648927fec05',
 }
-e = TaskDeletedEvent(data=TaskDeletedEventData(**event_data))
+e = AccountDeletedEvent(data=AccountDeletedEventData(**event_data))
