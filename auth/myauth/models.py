@@ -3,6 +3,14 @@ import rele
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+import sys
+sys.path.append('..')
+from schemas.account_events import (
+    AccountRoleChangedEvent, AccountRoleChangedEventData,
+    AccountCreatedEvent, AccountUpdatedEvent, AccountCreatedUpdatedEventData,
+    AccountDeletedEvent, AccountDeletedEventData,
+)
+
 
 class MyUser(AbstractUser):
     ROLE_ADMIN = 'admin'
@@ -31,63 +39,50 @@ class MyUser(AbstractUser):
         # new account
         if not self.id:
             # produce CUD event
-            event = {
-                'event_name': 'AccountCreated',
-                'event_type': 'CUD',
-                'data': {
-                    'public_id': str(self.public_id),
-                    'username': str(self.username),
-                    'email': self.email,
-                    'full_name': self.get_full_name(),
-                    'role': self.role
-                }
+            event_data = {
+                'public_id': str(self.public_id),
+                'username': str(self.username),
+                'email': self.email,
+                'full_name': self.get_full_name(),
+                'role': self.role
             }
+            event = AccountCreatedEvent(data=AccountCreatedUpdatedEventData(**event_data))
             topic = 'accounts-stream'
-            rele.publish(topic, event)
+            rele.publish(topic, event.json())
             # produce CUD event END
         else:
             # produce CUD event
-            event = {
-                'event_name': 'AccountUpdated',
-                'event_type': 'CUD',
-                'data': {
-                    'public_id': str(self.public_id),
-                    'username': str(self.username),
-                    'email': self.email,
-                    'full_name': self.get_full_name(),
-                    'role': self.role
-                }
+            event_data = {
+                'public_id': str(self.public_id),
+                'username': str(self.username),
+                'email': self.email,
+                'full_name': self.get_full_name(),
+                'role': self.role
             }
+            event = AccountUpdatedEvent(data=AccountCreatedUpdatedEventData(**event_data))
             topic = 'accounts-stream'
-            rele.publish(topic, event)
+            rele.publish(topic, event.json())
             # produce CUD event END
         super(MyUser, self).save(*args, **kwargs)
         if self.role != self.__original_role:
             # produce Business event
-            event = {
-                'event_name': 'AccountRoleChanged',
-                'event_type': 'business',
-                'data': {
-                    'public_id': str(self.public_id),
-                    'new_role': self.role,
-                    'original_role': self.__original_role
-                }
+            event_data = {
+                'public_id': str(self.public_id),
+                'new_role': self.role,
+                'original_role': self.__original_role
             }
+            event = AccountRoleChangedEvent(data=AccountRoleChangedEventData(**event_data))
             topic = 'accounts'
-            rele.publish(topic, event)
+            rele.publish(topic, event.json())
             # produce Business event END
 
     def delete(self, *args, **kwargs):
         super(MyUser, self).delete(*args, **kwargs)
         # produce CUD event
-        event = {
-            'event_name': 'AccountDeleted',
-            'event_type': 'CUD',
-            'data': {
-                'public_id': str(self.public_id)
-            }
+        event_data = {
+            'public_id': str(self.public_id)
         }
+        event = AccountDeletedEvent(data=AccountDeletedEventData(**event_data))
         topic = 'accounts-stream'
-        print(event)
-        rele.publish(topic, event)
+        rele.publish(topic, event.json())
         # produce CUD event END
