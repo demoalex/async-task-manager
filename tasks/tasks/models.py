@@ -10,7 +10,7 @@ import sys
 sys.path.append('..')
 from schemas.tasks_events import (TaskCreatedEvent, TaskUpdatedEvent, TaskCreatedUpdatedEventData,
                                   TaskDeletedEvent, TaskDeletedEventData,
-                                  TaskRoleChangedEvent, TaskRoleChangedEventData, )
+                                  TaskStatusChangedEvent, TaskStatusChangedEventData, )
 
 
 class ExternalUser(models.Model):
@@ -87,7 +87,7 @@ class Task(models.Model):
                 'new_status': self.status,
                 'original_status': self.__original_status
             }
-            event = TaskRoleChangedEvent(data=TaskRoleChangedEventData(**event_data))
+            event = TaskStatusChangedEvent(data=TaskStatusChangedEventData(**event_data))
             topic = 'tasks'
             rele.publish(topic, event.json())
             # produce Business event END
